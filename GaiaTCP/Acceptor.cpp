@@ -34,7 +34,7 @@ namespace Gaia::TCP
     /// Accept a request and establish a connection.
     Connection Acceptor::Accept()
     {
-        /**
+        /*
          * The context is newly constructed here,
          * because IO objects of boost::asio in the same context will actually work in serial working model.
          */
