@@ -1,22 +1,36 @@
 #include <GaiaTCP/GaiaTCP.hpp>
-#include <GaiaByteUtility/GaiaByteUtility.hpp>
 #include <iostream>
 #include <GaiaTCP/Acceptor.h>
+#include <thread>
 
 using namespace Gaia;
 
 int main()
 {
     TCP::Acceptor acceptor(8000);
-    bool bound = acceptor.IsBound();
 
     auto connection = acceptor.Accept();
 
-    while(true)
-    {
-        ByteUtility::BytesBuffer data = connection.Read();
-        std::cout << ByteUtility::BytesPrinter::PrintToString(ByteUtility::ToBytesAddress(data)) << std::endl;
-    }
+    connection.OnReceive.Add(Events::Functor<const std::string&>([](const std::string& text){
+        std::cout << text << std::endl;
+    }));
 
-	return 0;
+    connection.StartListen();
+
+    Gaia::Background::BackgroundWorker sender([&connection](const std::atomic_bool& flag){
+        while (flag)
+        {
+            std::string heart_beat = "HeartBeat";
+            std::cout << "Heart beat enqueue." << std::endl;
+            connection.Write(heart_beat.data(), heart_beat.size());
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    });
+    sender.Start();
+
+    connection.StartListen();
+
+    connection.WaitError();
+
+    return 0;
 }

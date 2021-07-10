@@ -1,5 +1,4 @@
 #include <GaiaTCP/GaiaTCP.hpp>
-#include <GaiaByteUtility/GaiaByteUtility.hpp>
 #include <iostream>
 #include <thread>
 
@@ -10,16 +9,21 @@ int main()
     TCP::Connection connection = TCP::Connector::Connect(TCP::MakeLocalEndpoint(8000));
 
     unsigned int index = 0;
+    connection.OnReceive.Add(Events::Functor<const std::string&>([](const std::string& text){
+        std::cout << text << std::endl;
+    }));
+    connection.StartListen();
 
     while(true)
     {
         std::cout << "Index: " << index << std::endl;
 
-        ByteUtility::BytesBuilder builder;
-        builder.AddValue(index);
-        connection.Write(ByteUtility::ToBytesAddress(builder.BytesData));
+        std::string text;
+        std::cin >> text;
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        connection.Write(text.data(), text.size());
+
+        std::this_thread::sleep_for(std::chrono::seconds(3));
 
         ++index;
     }

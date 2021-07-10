@@ -51,6 +51,14 @@ macro(find_hpp path list_name)
     endforeach()
 endmacro()
 
+# Macro for adding a custom module to a specific target.
+macro(add_custom_module target_name visibility module_name)
+    find_path(${module_name}_INCLUDE_DIRS "${module_name}")
+    find_library(${module_name}_LIBS "${module_name}")
+    target_include_directories(${target_name} ${visibility} ${${module_name}_INCLUDE_DIRS})
+    target_link_libraries(${target_name} ${visibility} ${${module_name}_LIBS})
+endmacro()
+
 #------------------------------
 # C++
 #------------------------------
@@ -84,6 +92,17 @@ target_link_libraries(${TARGET_NAME} PUBLIC "GaiaByteUtility")
 #==============================
 # Dependencies
 #==============================
+
+# Gaia Background
+add_custom_module(${TARGET_NAME} PUBLIC GaiaBackground)
+# Gaia Events
+add_custom_module(${TARGET_NAME} PUBLIC GaiaEvents)
+
+# TBB
+find_path(TBB_INCLUDE "tbb/tbb.h")
+find_library(TBB_LIB "libtbb.so")
+target_include_directories(${TARGET_NAME} PUBLIC ${TBB_INCLUDE})
+target_link_libraries(${TARGET_NAME} PUBLIC ${TBB_LIB})
 
 # Boost
 find_package(Boost 1.71 REQUIRED COMPONENTS system stacktrace_backtrace)
