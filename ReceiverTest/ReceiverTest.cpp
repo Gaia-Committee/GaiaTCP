@@ -1,6 +1,6 @@
 #include <GaiaTCP/GaiaTCP.hpp>
 #include <iostream>
-#include <GaiaTCP/Acceptor.h>
+#include <GaiaTCP/Acceptor.hpp>
 #include <thread>
 
 using namespace Gaia;

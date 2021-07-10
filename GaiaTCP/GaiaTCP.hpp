@@ -2,8 +2,8 @@
 
 #include "Endpoint.hpp"
 #include "Connection.hpp"
-#include "Acceptor.h"
-#include "Connector.h"
+#include "Acceptor.hpp"
+#include "Connector.hpp"
 
 namespace Gaia::TCP
 {
